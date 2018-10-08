@@ -3,6 +3,10 @@ const mongoose = require('mongoose')
 
 const app = express()
 
+const users = require('./routes/api/users-auth')
+const profile = require('./routes/api/profile')
+const posts = require('./routes/api/posts')
+
 // DB Config
 const db = require('./config/keys').mongoURI
 
@@ -20,9 +24,14 @@ app.get('/', (req, res, next) => {
     res.send('Hello')
 })
 
+app.use('/api/users', users)
+app.use('/api/profile', profile)
+app.use('/api/posts', posts)
+
 const port = process.env.PORT || 5000
 
 app.listen(port, () => {
     console.log('server running on port' + port)
 })
+
 
