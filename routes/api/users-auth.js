@@ -12,6 +12,7 @@ const passport = require('passport')
 //Load input validation
 
 const ValidateRegisterInput = require('../../validation/register')
+const ValidateLoginInput = require('../../validation/login')
 
 // @route   GET api/users/test
 // @desc    Tests users route
