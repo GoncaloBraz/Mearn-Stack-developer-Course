@@ -73,7 +73,7 @@ router.post('/register', (req, res) => {
             })
         }
     })
-    .catch()
+    
 })
 
 
