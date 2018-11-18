@@ -7,7 +7,7 @@ module.exports = function validatePostInput(data) {
 
     data.text = !isEmpty(data.text) ? data.text : ''
 
-    if (Validator.isLength(data.text, {
+    if (!Validator.isLength(data.text, {
             min: 10,
             max: 300
         })) {
