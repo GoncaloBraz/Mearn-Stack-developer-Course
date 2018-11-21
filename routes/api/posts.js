@@ -174,4 +174,76 @@ router.post('/unlike/:id', passport.authenticate('jwt', {
 
 })
 
+// @route   POST api/posts/comment/:id
+// @desc    Add comment to post
+// @access  Private
+
+router.post('/comment/:id', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
+
+    const {
+        errors,
+        isValid
+    } = validatePostInput(req.body)
+
+    // Check Validation
+    if (!isValid) {
+        // If any errors, send 400 with errors obj
+        return res.status(400).json(errors)
+    }
+
+    Post.findById(req.params.id)
+        .then(post => {
+            // Creation of obj literal comment
+            const newComment = {
+                user: req.user.id,
+                text: req.body.text,
+                name: req.body.name,
+                avatar: req.body.avatar
+            }
+
+            // Add comment to array of comments
+            post.comments.unshift(newComment)
+
+            // Save
+            post.save().then(post => res.json(post))
+        })
+        .catch(err => res.status(404).json({
+            postnotfound: 'No post found'
+        }))
+})
+
+
+// @route   DELETE api/posts/comment/:id/:comment_id
+// @desc    DELETE comment from post
+// @access  Private
+
+router.delete('/comment/:id/:comment_id', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
+
+    Post.findById(req.params.id)
+        .then(post => {
+            // Check if comment exists
+            if (post.comments.filter(comment => comment._id.toString() === req.params.comment_id).length == 0) {
+                return res.status(404).json({
+                    commentnotexists: 'Comment does not exists'
+                })
+            }
+            // IF COMMENT ID EXISTS ON ARRAY
+            const removeIndex = post.comments
+                .map(item => item._id.toString())
+                .indexOf(req.params.comment_id)
+
+            // SPLICE COMMENT OUT OF ARRAY
+            post.comments.splice(removeIndex, 1)
+
+            post.save().then(post => res.json(post))
+        })
+        .catch(err => res.status(404).json({
+            postnotfound: 'No post found'
+        }))
+})
+
 module.exports = router
